@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WebGL Audio 3D Selfie</title>
+        <link href="/style/index.css" type="text/css" rel="stylesheet" />
+		<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    </head>
+    <body>
+        <audio id="audioElement" src="/audio/radioactive.mp3" preload="auto" loop></audio>        
+        <div class="controlContainer">
+            <button id="btn_play">Play the Audio</button>
+            <button id="btn_pause" disabled="true">Pause the Audio</button>
+            <button id="btn_volume_plus">Increase Volume</button>
+            <button id="btn_volume_minus">Decrease Volume</button>
+        </div>
+        <div id="container" calss="webglContainer"></div>
+        <script type="text/javascript" src="/javascript/lib/three.min.js"></script>
+        <script type="text/javascript" src="/javascript/lib/OrbitControls.js"></script>
+        <script type="text/javascript" src="/javascript/lib/RequestAnimationFrame.js"></script>
+	    <script type="text/javascript" src="/javascript/lib/Detector.js"></script>
+        <script type="text/javascript" src="/javascript/index.js"></script>
+    </body>
+</html>

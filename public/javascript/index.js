@@ -12,7 +12,8 @@ Audio.prototype.init    =   function()
     this.audioElement   =   document.getElementById('audioElement');
     this.audioSrc       =   this.audioCtx.createMediaElementSource(audioElement);
     this.analyser       =   this.audioCtx.createAnalyser();
-
+    this.analyser.smoothingTimeConstant = 0.1;
+	this.analyser.fftSize = 1024;
     // Bind our analyser to the media element source.
     this.audioSrc.connect(this.analyser);
     this.audioSrc.connect(this.audioCtx.destination);
@@ -174,7 +175,6 @@ function animate() {
     requestAnimationFrame(animate);
     render();
 
-    //stats.update();
     renderer.render(scene, camera);
 }
 var i = 1;

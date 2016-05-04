@@ -275,20 +275,20 @@ Webgl.prototype.init    =   function() {
     controls.dampingFactor  =   0.25;
     controls.enableZoom     =   false;
     var loader  =   new THREE.OBJLoader();
-    var texture = THREE.ImageUtils.loadTexture(data_img, new THREE.UVMapping(), function() {
-        texture.needsUpdate = true;
-        material = new THREE.MeshBasicMaterial({color: 0x2194CE});
-        loader.load('/models/head_mesh.obj', function(object) {
-            object.traverse(function (child) {
-                if (child instanceof THREE.Mesh) {
-                    child.material = material;
-                }
-            });
-            object.scale.x    =   object.scale.y    =   object.scale.z = 100;
-            head    =   object;
-            scene.add(object);
+    var texture     =   THREE.ImageUtils.loadTexture(data_img);
+    loader.load('/models/face.obj', function(object) {
+        var material    =    new THREE.MeshBasicMaterial({map: texture});
+        console.log(object);
+        object.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+                child.material = material;
+            }
         });
+        object.scale.x    =   object.scale.y    =   object.scale.z = 60;
+        head    =   object;
+        scene.add(object);
     });
+
 
     rings = [];
 	levels = [];
@@ -340,7 +340,7 @@ Webgl.prototype.init    =   function() {
     audio.audioElement.play();
     document.getElementById('btn_play').setAttribute('disabled', true);
     document.getElementById('btn_pause').removeAttribute('disabled', true);
-    
+
     container.appendChild(renderer.domElement);
     function animate() {
 		requestAnimationFrame( animate );
@@ -362,9 +362,9 @@ Webgl.prototype.init    =   function() {
 		}
 
         if(amp != 0)
-            head.scale.x = head.scale.y = head.scale.z =  amp / 2 + 0.5;
+            head.scale.x = head.scale.y = head.scale.z =  amp / 1.6 + 0.5;
         else
-            head.scale.x = head.scale.y = head.scale.z =  100;
+            head.scale.x = head.scale.y = head.scale.z =  60;
 
 		var aveLevel = sum / BIN_COUNT;
 		var scaled_average = (aveLevel / 256) * VOL_SENS; //256 is the highest a level can be

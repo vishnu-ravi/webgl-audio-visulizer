@@ -71,7 +71,7 @@ ImageLoader.prototype.bindEvents    =   function() {
     document.getElementById('btn_zoom_in').onclick  =   function(e) {
         e.preventDefault();
 
-        _this.initial_w     =   _this.initial_w * 2;
+        _this.initial_w     =   _this.initial_w * 1.2;
         _this.new_h         =   _this.img_h / _this.img_w * _this.initial_w;
 
         _this.calcCenter();
@@ -89,7 +89,7 @@ ImageLoader.prototype.bindEvents    =   function() {
     document.getElementById('btn_zoom_out').onclick     =   function(e) {
         e.preventDefault();
 
-        _this.initial_w     =   _this.initial_w / 2;
+        _this.initial_w     =   _this.initial_w / 1.2;
         _this.new_h         =   _this.img_h / _this.img_w * _this.initial_w;
 
         _this.calcCenter();
@@ -111,17 +111,21 @@ ImageLoader.prototype.bindEvents    =   function() {
 
         clip_ctx.translate(_this.width / 2, _this.height / 2);
         clip_ctx.beginPath();
-        clip_ctx.moveTo(-80, -50);
+        /*clip_ctx.moveTo(-80, -50);
         clip_ctx.bezierCurveTo(-80, -150, 80, -150, 80, -50);
         clip_ctx.bezierCurveTo(80, -30, 85, -40, 75, 50);
         clip_ctx.bezierCurveTo(75, 150, -75, 150, -75, 50);
 
-        clip_ctx.bezierCurveTo(-85, -40, -80, -30, -80, -50);
+        clip_ctx.bezierCurveTo(-85, -40, -80, -30, -80, -50);*/
+        clip_ctx.moveTo(-80, -20);
+        clip_ctx.bezierCurveTo(-80, -150, 80, -150, 80, -20);
+        clip_ctx.bezierCurveTo(85, -20, 0, 280, -80, -20);
         clip_ctx.closePath();
 
         clip_ctx.clip();
         clip_ctx.stroke();
-
+        //this.ctx.moveTo(-80, -20);
+        //this.ctx.bezierCurveTo(-85, -20, 0, 280, 80, -20);
         var img    =    new Image();
         img.onload  =   function() {
             var final_canvas    =   document.getElementById('final_canvas');
@@ -151,7 +155,7 @@ ImageLoader.prototype.drawFace      =   function () {
     this.ctx.translate(this.width / 2, this.height / 2);
     this.ctx.scale(2, 1);
     this.ctx.beginPath();
-    this.ctx.arc(-25, -50, 10, 0, Math.PI * 2, false);
+    this.ctx.arc(-20, -40, 10, 0, Math.PI * 2, false);
     this.ctx.restore();
 
     this.ctx.lineWidth      =   2;
@@ -162,7 +166,7 @@ ImageLoader.prototype.drawFace      =   function () {
     this.ctx.translate(this.width / 2, this.height / 2);
     this.ctx.scale(2, 1);
     this.ctx.beginPath();
-    this.ctx.arc(25, -50, 10, 0, Math.PI * 2, false);
+    this.ctx.arc(20, -40, 10, 0, Math.PI * 2, false);
     this.ctx.restore();
 
     this.ctx.lineWidth      =   2;
@@ -173,8 +177,8 @@ ImageLoader.prototype.drawFace      =   function () {
     this.ctx.translate(this.width / 2, this.height / 2);
 
     this.ctx.beginPath();
-    this.ctx.moveTo(-75, 50);
-    this.ctx.bezierCurveTo(-75, 150, 75, 150, 75, 50);
+    this.ctx.moveTo(-80, -20);
+    this.ctx.bezierCurveTo(-85, -20, 0, 280, 80, -20);
     this.ctx.restore();
 
     this.ctx.lineWidth      =   2;

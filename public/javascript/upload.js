@@ -111,12 +111,7 @@ ImageLoader.prototype.bindEvents    =   function() {
 
         clip_ctx.translate(_this.width / 2, _this.height / 2);
         clip_ctx.beginPath();
-        /*clip_ctx.moveTo(-80, -50);
-        clip_ctx.bezierCurveTo(-80, -150, 80, -150, 80, -50);
-        clip_ctx.bezierCurveTo(80, -30, 85, -40, 75, 50);
-        clip_ctx.bezierCurveTo(75, 150, -75, 150, -75, 50);
 
-        clip_ctx.bezierCurveTo(-85, -40, -80, -30, -80, -50);*/
         clip_ctx.moveTo(-80, -20);
         clip_ctx.bezierCurveTo(-80, -150, 80, -150, 80, -20);
         clip_ctx.bezierCurveTo(85, -20, 0, 280, -80, -20);
@@ -124,8 +119,7 @@ ImageLoader.prototype.bindEvents    =   function() {
 
         clip_ctx.clip();
         clip_ctx.stroke();
-        //this.ctx.moveTo(-80, -20);
-        //this.ctx.bezierCurveTo(-85, -20, 0, 280, 80, -20);
+
         var img    =    new Image();
         img.onload  =   function() {
             var final_canvas    =   document.getElementById('final_canvas');
@@ -136,10 +130,11 @@ ImageLoader.prototype.bindEvents    =   function() {
             new_img.onload  =   function() {
                 final_ctx.canvas.width = 200;
                 final_ctx.canvas.height = 300;
-                final_ctx.drawImage(new_img, 150, 100, 200, 300, 0, 0, 200, 300);
+                final_ctx.drawImage(new_img, 150, 80, 200, 300, 0, 0, 200, 300);
                 data_img    =   final_canvas.toDataURL();
                 document.getElementById('output').setAttribute('src', data_img);
                 audio.init();
+                webgl.bindEvents();
                 webgl.init();
             };
             new_img.src =   clip_canvas.toDataURL();
@@ -235,14 +230,19 @@ var rings = [];
 var levels = [];
 var colors = [];
 var loopHolder = new THREE.Object3D();
+var particleHolder  =   new THREE.Object3D();
 var loopGeom;//one geom for all rings
 var perlin = new ImprovedNoise();
 var noisePos = 0;
 var freqByteData;
 var timeByteData;
 var head;
+var effect;
 
 Webgl.prototype.init    =   function() {
+    effect  =   document.getElementById('effect');
+    effect  =   effect.options[effect.selectedIndex].value;
+
     document.getElementById('section_upload').style.display =   'none';
     document.getElementById('section_3d').style.display =   'block';
     var distance    =   100;
@@ -282,7 +282,6 @@ Webgl.prototype.init    =   function() {
     var texture     =   THREE.ImageUtils.loadTexture(data_img);
     loader.load('/models/face.obj', function(object) {
         var material    =    new THREE.MeshBasicMaterial({map: texture});
-        console.log(object);
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
                 child.material = material;
@@ -291,9 +290,27 @@ Webgl.prototype.init    =   function() {
         object.scale.x    =   object.scale.y    =   object.scale.z = 60;
         head    =   object;
         scene.add(object);
+
+        particle_count =   10000;
+        var particles     =   new THREE.Geometry();
+        pMaterial           =   new THREE.ParticleBasicMaterial({color: 0xFFFFFF, size: 1});
+
+        for (var p = 0; p < particle_count; p++) {
+            var pX = Math.random() * 500 - 250,
+            pY = Math.random() * 500 - 250,
+            pZ = 8,
+            particle = new THREE.Vector3(pX, pY, pZ);
+
+            particles.vertices.push(particle);
+        }
+
+        var particleSystem  =   new THREE.ParticleSystem(particles, pMaterial);
+        console.log(particleSystem);
+        particleHolder.add(particleSystem);
+        scene.add(particleHolder);
     });
 
-
+    //Waveform Visulization
     rings = [];
 	levels = [];
 	colors = [];
@@ -334,7 +351,10 @@ Webgl.prototype.init    =   function() {
 
 	}
     loopHolder.position.z = -340;
-    scene.add(loopHolder);
+    //scene.add(loopHolder);
+
+
+
     renderer.autoClear  =   false;
     renderer.setClearColor(0x000000, 0.0);
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -352,10 +372,21 @@ Webgl.prototype.init    =   function() {
 	}
 
     function render() {
+
+        if(effect == 'waveform')
+            waveform();
+        else if(effect == 'particle')
+            particles();
+
+        renderer.clear();
+		renderer.render(scene, camera);
+	}
+
+    function waveform () {
         audio.analyser.getByteFrequencyData(freqByteData);
 		audio.analyser.getByteTimeDomainData(timeByteData);
 
-		//add a new average volume onto the list
+        //add a new average volume onto the list
 		var sum = 0;
         var amp = 0;
 		for(var i = 0; i < BIN_COUNT; i++) {
@@ -365,10 +396,13 @@ Webgl.prototype.init    =   function() {
                 amp =   loud;
 		}
 
-        if(amp != 0)
-            head.scale.x = head.scale.y = head.scale.z =  amp / 1.6 + 0.5;
-        else
-            head.scale.x = head.scale.y = head.scale.z =  60;
+        if(typeof head != 'undefined')
+        {
+            if(amp != 0)
+                head.scale.x = head.scale.y = head.scale.z =  amp / 1.6 + 0.5;
+            else
+                head.scale.x = head.scale.y = head.scale.z =  60;
+        }
 
 		var aveLevel = sum / BIN_COUNT;
 		var scaled_average = (aveLevel / 256) * VOL_SENS; //256 is the highest a level can be
@@ -398,12 +432,28 @@ Webgl.prototype.init    =   function() {
 			rings[i].material.opacity = normLevel;
 			rings[i].scale.z = normLevel;
 		}
+    }
 
-        renderer.clear();
-		renderer.render( scene, camera );
-	}
+    function particles() {
+
+    }
+
     animate();
 };
+
+Webgl.prototype.bindEvents = function () {
+    document.getElementById('effect').onchange  =   function() {
+        effect  =   this.options[this.selectedIndex].value;
+
+        loopHolder.visible =    false;
+        particleHolder.visible  = false;
+
+        if(effect == 'waveform')
+            loopHolder.visible =    true;
+        else if(effect == 'particle')
+            particleHolder.visible =    true;
+    }
+}
 
 var audio, frequencyData;
 var Audio   =   function(){

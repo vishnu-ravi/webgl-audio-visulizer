@@ -28,11 +28,16 @@
                 <button id="btn_pause" disabled="true">Pause the Audio</button>
                 <button id="btn_volume_plus">Increase Volume</button>
                 <button id="btn_volume_minus">Decrease Volume</button>
+                <select id="effect">
+                    <option value="particle">Particle</option>
+                    <option value="waveform">Waveform</option>                    
+                </select>
             </div>
             <div id="container" calss="webglContainer"></div>
         </div>
         <script type="text/javascript" src="/javascript/lib/three.min.js"></script>
         <script type="text/javascript" src="/javascript/lib/OrbitControls.js"></script>
+        <script type="text/javascript" src="/javascript/lib/GeometryUtils.js"></script>
         <script type="text/javascript" src="/javascript/lib/OBJLoader.js"></script>
         <script type="text/javascript" src="/javascript/lib/RequestAnimationFrame.js"></script>
 	    <script type="text/javascript" src="/javascript/lib/Detector.js"></script>
